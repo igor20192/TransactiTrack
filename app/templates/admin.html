@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Total Transactions: {{ total_transactions }}</p>
+    <p>Total Amount: {{ total_amount }}</p>
+
+    <h2>Users</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Transactions</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ len(user.transactions) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
