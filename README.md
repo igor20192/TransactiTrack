@@ -64,43 +64,41 @@ volumes:
 ## Step 3: Create and Activate Virtual Environment
 
 Create a virtual environment and activate it:
-
-    ```bash 
+ 
     python -m venv venv
     source venv/bin/activate  # On Windows use: venv\Scripts\activate
-    ```
+    
 
 ## Step 4: Install Dependencies
 
-    ```bash
     pip install -r requirements.txt
-    ```
+    
 
 ## Step 5: Configure Environment Variables
 
 Create a .env file in the project root with the following content:
 
-    ```plaintext
+    
     DATABASE_USERNAME=your_postgres_username
     DATABASE_PASSWORD=your_postgres_password
     DATABASE_NAME=your_database_name
-    ```
+    
 
 ## Step 6: Apply Database Migrations
 
 Ensure your PostgreSQL database is running and then apply migrations:
 
-    ```bash
+    
     alembic upgrade head
-    ```
+    
 
 ## Step 7: Run the Application
 
 Start the FastAPI server:
 
-    ```bash
+    
     uvicorn app.main:app --reload
-    ```
+    
 
 The API will be available at http://127.0.0.1:8000.
 
