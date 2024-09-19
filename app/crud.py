@@ -1,4 +1,6 @@
+from datetime import datetime
 import logging
+from typing import Optional
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -94,30 +96,49 @@ async def get_all_users(db: AsyncSession):
         raise
 
 
-async def add_transaction(db: AsyncSession, user_id: int, type: str, amount: float):
+async def add_transaction(
+    db: AsyncSession,
+    user_id: int,
+    type: str,
+    amount: float,
+    timestamp: Optional[datetime] = None,
+):
     """
-    Asynchronously add a new transaction for a user.
+    Adds a new transaction to the database for a specified user.
+
+    This function creates a new transaction record with the provided user ID, transaction type,
+    and amount. If no timestamp is provided, the current datetime is used. The transaction is
+    then committed to the database.
 
     Args:
-        db (AsyncSession): The asynchronous database session.
-        user_id (int): The ID of the user the transaction belongs to.
-        type (str): The type of transaction (e.g., 'credit', 'debit').
+        db (AsyncSession): The database session for executing the transaction.
+        user_id (int): The ID of the user to whom the transaction is related.
+        type (str): The type of the transaction (e.g., "credit", "debit").
         amount (float): The amount of the transaction.
+        timestamp (Optional[datetime], optional): The timestamp of the transaction. Defaults to None.
 
     Returns:
-        models.Transaction: The newly created transaction object.
+        models.Transaction: The newly created transaction record with its ID.
 
     Raises:
-        Exception: If an error occurs during transaction creation.
+        Exception: If an error occurs while adding the transaction, the exception is logged
+                   and re-raised.
     """
     try:
         logger.debug(
             f"Adding transaction for user ID {user_id}: type={type}, amount={amount}"
         )
-        db_transaction = models.Transaction(user_id=user_id, type=type, amount=amount)
+        if timestamp is None:
+            timestamp = datetime.now()
+
+        db_transaction = models.Transaction(
+            user_id=user_id, type=type, amount=amount, timestamp=timestamp
+        )
+
         db.add(db_transaction)
         await db.commit()
         await db.refresh(db_transaction)
+
         logger.info(f"Transaction added with ID: {db_transaction.id}")
         return db_transaction
     except Exception as e:
