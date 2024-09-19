@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit User</title>
+</head>
+<body>
+    <h1>Edit User</h1>
+    <form action="/admin/users/{{ user.id }}" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="{{ user.username }}">
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

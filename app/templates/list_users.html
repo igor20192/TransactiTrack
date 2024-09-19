@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User List</title>
+    <!-- Connect Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Total Transactions: {{ total_transactions }}</p>
+    <p>Total Amount: {{ total_amount }}</p>
+
+    <h2>Users</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Actions</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>
+                <a href="/admin/users/{{ user.id }}">Edit</a>
+                <form action="/admin/users/{{ user.id }}/delete" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+   <!-- Canvas to display the graph -->
+    <canvas id="transactionChart" width="400" height="200"></canvas>
+
+    <!-- Hidden element for passing data in JSON -->
+    <script id="transaction-data" type="application/json">
+        {{ transaction_data | tojson }}
+    </script>
+
+    <!-- Connect an external JS file -->
+    <script src="/static/js/transaction_chart.js"></script>
+</body>
+</html>
