@@ -29,8 +29,10 @@ This project provides a user and transaction management system built with FastAP
 ## Step 1: Clone the Repository
 
     ```bash
-   git clone git@github.com:igor20192/TransactiTrack.git
-   cd TransactiTrack
+    git clone git@github.com:igor20192/TransactiTrack.git
+    ```
+    ```bash
+    cd TransactiTrack
     ```
 
 ## Step 2: Set Up PostgreSQL with Docker
