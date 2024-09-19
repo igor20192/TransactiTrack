@@ -2,3 +2,4 @@ env
 .env
 .env.db
 __pycache__
+settings.json
