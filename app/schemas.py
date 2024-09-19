@@ -3,36 +3,13 @@ from typing import List, Optional
 from datetime import datetime
 
 
-class TransactionBase(BaseModel):
-    """
-    Base schema for a transaction. It defines the common attributes for creating or interacting with transactions.
-
-    Attributes:
-        type (str): The type of transaction (e.g., 'credit', 'debit').
-        amount (float): The amount of money involved in the transaction.
-    """
-
+class Transaction(BaseModel):
+    user_id: int
     type: str
     amount: float
-
-
-class Transaction(TransactionBase):
-    """
-    Schema for a transaction that extends the TransactionBase schema with additional attributes.
-
-    Attributes:
-        id (int): The unique identifier of the transaction.
-        timestamp (datetime): The time when the transaction occurred.
-    """
-
-    id: int
-    timestamp: datetime
+    timestamp: Optional[datetime] = None  # Make timestamp optional
 
     class Config:
-        """
-        Pydantic configuration for enabling ORM mode, allowing attributes to be loaded from an ORM model.
-        """
-
         from_attributes = True
 
 
