@@ -21,7 +21,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
 @app.post("/users/", response_model=schemas.UserId)
-async def add_user(username: str, db: AsyncSession = Depends(async_get_db)):
+async def add_user(user: schemas.UserBase, db: AsyncSession = Depends(async_get_db)):
     """
     Create a new user in the database.
 
@@ -29,7 +29,7 @@ async def add_user(username: str, db: AsyncSession = Depends(async_get_db)):
     The user will be stored in the database, and its ID will be returned.
 
     Args:
-        username (str): The username of the user to be created.
+        user (schemas.UserCreate): The request body containing the username of the user to be created.
         db (AsyncSession, optional): The database session, injected via FastAPI dependency.
 
     Returns:
@@ -39,10 +39,10 @@ async def add_user(username: str, db: AsyncSession = Depends(async_get_db)):
         HTTPException: If an error occurs during user creation, a 500 Internal Server Error is raised.
     """
     try:
-        logger.debug(f"Creating user with username: {username}")
-        user = await crud.create_user(db=db, username=username)
-        logger.info(f"User created with ID: {user.id}")
-        return user
+        logger.debug(f"Creating user with username: {user.username}")
+        new_user = await crud.create_user(db=db, username=user.username)
+        logger.info(f"User created with ID: {new_user.id}")
+        return new_user
     except Exception as e:
         logger.error(f"Error creating user: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Error creating user")
@@ -108,35 +108,38 @@ async def get_all_users(db: AsyncSession = Depends(async_get_db)):
 
 @app.post("/transactions/")
 async def add_transaction(
-    user_id: int, type: str, amount: float, db: AsyncSession = Depends(async_get_db)
+    transaction: schemas.Transaction, db: AsyncSession = Depends(async_get_db)
 ):
     """
     Add a transaction for a specific user.
 
-    This endpoint allows for adding a transaction to a user by specifying the user ID,
-    transaction type, and amount.
+    This endpoint allows you to add a transaction for a user by specifying the user ID,
+    the type of the transaction, and the amount.
 
     Args:
-        user_id (int): The ID of the user for whom the transaction is being added.
-        type (str): The type of the transaction (e.g., "credit", "debit").
-        amount (float): The transaction amount.
+        transaction (schemas.Transaction): The request body containing the user ID,
+            transaction type, and amount.
         db (AsyncSession, optional): The database session, injected via FastAPI dependency.
 
     Returns:
-        models.Transaction: The added transaction details.
+        models.Transaction: Details of the added transaction.
 
     Raises:
-        HTTPException: If an error occurs during transaction creation, a 500 Internal Server Error is raised.
+        HTTPException: Returns a 500 Internal Server Error if an error occurs during
+            transaction creation.
     """
     try:
         logger.debug(
-            f"Adding transaction for user ID {user_id}: type={type}, amount={amount}"
+            f"Adding transaction for user ID {transaction.user_id}: type={transaction.type}, amount={transaction.amount}"
         )
-        transaction = await crud.add_transaction(
-            db=db, user_id=user_id, type=type, amount=amount
+        transaction_data = await crud.add_transaction(
+            db=db,
+            user_id=transaction.user_id,
+            type=transaction.type,
+            amount=transaction.amount,
         )
-        logger.info(f"Transaction added with ID: {transaction.id}")
-        return transaction
+        logger.info(f"Transaction added with ID: {transaction_data.id}")
+        return transaction_data
     except Exception as e:
         logger.error(f"Error adding transaction: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Error adding transaction")
